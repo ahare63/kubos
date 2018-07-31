@@ -21,6 +21,7 @@ members = [
 "hal/rust-hal/rust-uart",
 "kubos-build-helper",
 "services/app-service",
+"services/monitor-service",
 "services/comms-service",
 "services/kubos-service",
 "services/iobc-supervisor-service",

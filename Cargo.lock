@@ -336,7 +336,7 @@ name = "isis-ants"
 version = "0.1.0"
 dependencies = [
  "isis-ants-api 0.1.0",
- "slog 2.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slog 2.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "slog-async 2.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "slog-stream 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "slog-term 2.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -509,7 +509,7 @@ version = "0.1.0"
 dependencies = [
  "i2c-linux 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "mai400-api 0.1.0",
- "slog 2.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slog 2.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "slog-async 2.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "slog-stream 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "slog-term 2.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -560,6 +560,19 @@ version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.2.42 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "monitor-service"
+version = "0.1.0"
+dependencies = [
+ "failure 1.0.0 (git+https://github.com/rust-lang-nursery/failure)",
+ "juniper 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kubos-service 0.1.0",
+ "serde 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 1.0.24 (registry+https://github.com/rust-lang/crates.io-index)",
+ "text_io 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -860,7 +873,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "slog"
-version = "2.3.1"
+version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -868,7 +881,7 @@ name = "slog-async"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "slog 2.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slog 2.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "take_mut 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "thread_local 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -899,7 +912,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "chrono 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "isatty 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "slog 2.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slog 2.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "term 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "thread_local 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1006,6 +1019,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.2.42 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "text_io"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "thread_local"
@@ -1218,7 +1236,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum serial-unix 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f03fbca4c9d866e24a459cbca71283f545a37f8e3e002ad8c70593871453cab7"
 "checksum serial-windows 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "15c6d3b776267a75d31bbdfd5d36c0ca051251caafc285827052bc53bcdc8162"
 "checksum slog 1.7.1 (registry+https://github.com/rust-lang/crates.io-index)" = "07aa15818e194222ef5b814aec86d47da20d93360c068b2c5f5ef64d9347fbdf"
-"checksum slog 2.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c43bcfcefccea70a0c52528be603b13237e76d7a031e6e1e92fabc344bd0a3aa"
+"checksum slog 2.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "b3253057a9e9e291d19fa9c7645290ab61aff1d009b77b0065fff8accd833c04"
 "checksum slog-async 2.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e544d16c6b230d84c866662fe55e31aacfca6ae71e6fc49ae9a311cb379bfc2f"
 "checksum slog-extra 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "511581f4dd1dc90e4eca99b60be8a692d9c975e8757558aa774f16007d27492a"
 "checksum slog-stream 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "3fac4af71007ddb7338f771e059a46051f18d1454d8ac556f234a0573e719daa"
@@ -1233,6 +1251,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum tempfile 3.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "c4b103c6d08d323b92ff42c8ce62abcd83ca8efa7fd5bf7927efefec75f58c76"
 "checksum term 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "5e6b677dd1e8214ea1ef4297f85dbcbed8e8cdddb561040cc998ca2551c37561"
 "checksum termios 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "d5d9cf598a6d7ce700a4e6a9199da127e6819a61e64b68609683cc9a01b5683a"
+"checksum text_io 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)" = "9658b61ebd1d2a40c276ba2335890b9eb6550b67458a6fbce2022e58c3350a50"
 "checksum thread_local 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)" = "279ef31c19ededf577bfd12dfae728040a21f635b06a24cd670ff510edd38963"
 "checksum time 0.1.40 (registry+https://github.com/rust-lang/crates.io-index)" = "d825be0eb33fda1a7e68012d51e9c7f451dc1a69391e7fdc197060bb8c56667b"
 "checksum toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)" = "a0263c6c02c4db6c8f7681f9fd35e90de799ebd4cfdeab77a38f4ff6b3d8c0d9"
