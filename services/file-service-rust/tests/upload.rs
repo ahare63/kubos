@@ -329,10 +329,10 @@ fn upload_large() {
     let test_dir = TempDir::new().expect("Failed to create test dir");
     let test_dir_str = test_dir.path().to_str().unwrap();
     let source = format!("{}/source", test_dir_str);
-    let dest = format!("temp/dest");
+    let dest = format!("{}/dest", test_dir_str);
     let service_port = 7006;
 
-    // Create a 10MB file filled with random data
+    // Create a 5MB file filled with random data
     {
         let mut file = OpenOptions::new()
             .create(true)
@@ -340,7 +340,7 @@ fn upload_large() {
             .append(true)
             .open(source.clone())
             .unwrap();
-        for _ in 0..100 {
+        for _ in 0..5 {
             let mut contents = [0u8; 1_000_000];
             thread_rng().fill(&mut contents[..]);
 
@@ -363,13 +363,12 @@ fn upload_large() {
 
     // Cleanup the temporary files so that the test can be repeatable
     fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
-    //fs::remove_dir_all(format!("fp/storage/{}", hash)).unwrap();
+    fs::remove_dir_all(format!("fp/storage/{}", hash)).unwrap();
 
     // Verify the final file's contents
-
     let mut source_file = File::open(source).unwrap();
     let mut dest_file = File::open(dest).unwrap();
-    for num in 0..2442 {
+    for num in 0..1221 {
         let mut source_buf = [0u8; 4096];
         let mut dest_buf = [0u8; 4096];
 

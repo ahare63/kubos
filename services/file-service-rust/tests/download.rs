@@ -14,7 +14,7 @@ use rand::{thread_rng, Rng};
 use std::env;
 use std::path::Path;
 use std::fs;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
 use std::time::Duration;
 use tempfile::TempDir;
@@ -288,11 +288,21 @@ fn download_large() {
     let dest = format!("{}/dest", test_dir_str);
     let service_port = 7006;
 
-    // Create a 1MB file filled with random data
-    let mut contents = [0u8; 10_000_000];
-    thread_rng().fill(&mut contents[..]);
+    // Create a 5MB file filled with random data
+    {
+        let mut file = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .append(true)
+            .open(source.clone())
+            .unwrap();
+        for _ in 0..5 {
+            let mut contents = [0u8; 1_000_000];
+            thread_rng().fill(&mut contents[..]);
 
-    create_test_file(&source, &contents);
+            file.write(&contents).unwrap();
+        }
+    }
 
     service_new!(service_port);
 
@@ -303,10 +313,19 @@ fn download_large() {
     let hash = result.unwrap();
 
     // Cleanup the temporary files so that the test can be repeatable
-    //fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
-    //fs::remove_dir_all(format!("fp/storage/{}", hash)).unwrap();
+    fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
+    fs::remove_dir_all(format!("fp/storage/{}", hash)).unwrap();
 
     // Verify the final file's contents
-    let dest_contents = fs::read(dest).unwrap();
-    assert_eq!(&contents[..], dest_contents.as_slice());
+    let mut source_file = File::open(source).unwrap();
+    let mut dest_file = File::open(dest).unwrap();
+    for num in 0..1221 {
+        let mut source_buf = [0u8; 4096];
+        let mut dest_buf = [0u8; 4096];
+
+        source_file.read(&mut source_buf).unwrap();
+        dest_file.read(&mut dest_buf).unwrap();
+
+        assert_eq!(&source_buf[..], &dest_buf[..], "Chunk mismatch: {}", num);
+    }
 }
