@@ -93,11 +93,6 @@ fn download_single() {
 
     let hash = result.unwrap();
 
-    // TODO: Remove this sleep. We need it to let the service
-    // finish its work. The download logic needs to wait on
-    // the final ACK message before returning
-    thread::sleep(Duration::new(1, 0));
-
     // Cleanup the temporary files so that the test can be repeatable
     fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
     fs::remove_dir_all(format!("fp/storage/{}", hash)).unwrap();
@@ -128,11 +123,6 @@ fn download_multi_clean() {
 
     let hash = result.unwrap();
 
-    // TODO: Remove this sleep. We need it to let the service
-    // finish its work. The download logic needs to wait on
-    // the final ACK message before returning
-    thread::sleep(Duration::new(1, 0));
-
     // Cleanup the temporary files so that the test can be repeatable
     fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
     fs::remove_dir_all(format!("fp/storage/{}", hash)).unwrap();
@@ -162,11 +152,6 @@ fn download_multi_resume() {
     assert!(result.is_ok());
     let hash = result.unwrap();
 
-    // TODO: Remove this sleep. We need it to let the service
-    // finish its work. The download logic needs to wait on
-    // the final ACK message before returning
-    thread::sleep(Duration::new(1, 0));
-
     // Remove a chunk so we can test the retry logic
     fs::remove_file(format!("fp/storage/{}/0", hash)).unwrap();
 
@@ -174,11 +159,6 @@ fn download_multi_resume() {
     let result = download(service_port, &source, &dest);
     assert!(result.is_ok());
     let hash = result.unwrap();
-
-    // TODO: Remove this sleep. We need it to let the service
-    // finish its work. The download logic needs to wait on
-    // the final ACK message before returning
-    thread::sleep(Duration::new(1, 0));
 
     // Cleanup the temporary files so that the test can be repeatable
     fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
@@ -207,11 +187,6 @@ fn download_multi_complete() {
     // download the file once (clean download)
     let result = download(service_port, &source, &dest);
     assert!(result.is_ok());
-
-    // TODO: Remove this sleep. We need it to let the service
-    // finish its work. The download logic needs to wait on
-    // the final ACK message before returning
-    thread::sleep(Duration::new(1, 0));
 
     // download the file again
     let result = download(service_port, &source, &dest);
@@ -252,23 +227,11 @@ fn download_bad_hash() {
     assert!(result.is_ok());
     let hash = result.unwrap();
 
-    // TODO: Remove this sleep. We need it to let the service
-    // finish its work. The download logic needs to wait on
-    // the final ACK message before returning
-    thread::sleep(Duration::new(1, 0));
-
     // Tweak the chunk contents so the future hash calculation will fail
     fs::write(format!("client/storage/{}/0", hash), "bad data".as_bytes()).unwrap();
 
-    // TODO: THIS SHOULD FAIL
     let result = download(service_port, &source, &dest);
-    // TODO: Verify exact error message
-    assert!(result.is_ok());
-
-    // TODO: Remove this sleep. We need it to let the service
-    // finish its work. The download logic needs to wait on
-    // the final ACK message before returning
-    thread::sleep(Duration::new(1, 0));
+    assert_eq!(result.unwrap_err(), "File hash mismatch");
 
     // Cleanup the temporary files so that the test can be repeatable
     fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
@@ -302,11 +265,6 @@ fn download_multi_client() {
 
             let hash = result.unwrap();
 
-            // TODO: Remove this sleep. We need it to let the service
-            // finish its work. The download logic needs to wait on
-            // the final ACK message before returning
-            thread::sleep(Duration::new(1, 0));
-
             // Cleanup the temporary files so that the test can be repeatable
             fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
             fs::remove_dir_all(format!("fp/storage/{}", hash)).unwrap();
@@ -322,7 +280,6 @@ fn download_multi_client() {
 }
 
 // Massive download
-/*
 #[test]
 fn download_large() {
     let test_dir = TempDir::new().expect("Failed to create test dir");
@@ -331,8 +288,8 @@ fn download_large() {
     let dest = format!("{}/dest", test_dir_str);
     let service_port = 7006;
 
-    // Create a 1GB file filled with random data
-    let mut contents = [0u8; 1_000_000];
+    // Create a 1MB file filled with random data
+    let mut contents = [0u8; 10_000_000];
     thread_rng().fill(&mut contents[..]);
 
     create_test_file(&source, &contents);
@@ -345,17 +302,11 @@ fn download_large() {
 
     let hash = result.unwrap();
 
-    // TODO: Remove this sleep. We need it to let the service
-    // finish its work. The download logic needs to wait on
-    // the final ACK message before returning
-    thread::sleep(Duration::new(1, 0));
-
     // Cleanup the temporary files so that the test can be repeatable
-    fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
-    fs::remove_dir_all(format!("fp/storage/{}", hash)).unwrap();
+    //fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
+    //fs::remove_dir_all(format!("fp/storage/{}", hash)).unwrap();
 
     // Verify the final file's contents
     let dest_contents = fs::read(dest).unwrap();
     assert_eq!(&contents[..], dest_contents.as_slice());
 }
-*/

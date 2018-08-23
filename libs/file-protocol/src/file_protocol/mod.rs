@@ -194,12 +194,16 @@ impl Protocol {
 
             println!("-> {{ {}, {:?}, {:?} }}", hash, result, chunks);
             let mut vec = ser::to_vec_packed(&(hash, result)).unwrap();
+            // Make the array indefinite-length
+            vec[0] |= 0x1F;
+
             for chunk in chunks.iter() {
                 // Add the chunk number to the end of the CBOR array
                 vec.append(&mut ser::to_vec_packed(&chunk).unwrap());
-                // Update length of CBOR array
-                vec[0] += 1;
             }
+
+            // Add the array break character
+            vec.push(0xFF);
 
             self.cbor_proto
                 .send_message(&vec, &self.host, self.dest_port.get())
