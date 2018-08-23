@@ -9,6 +9,7 @@ pub struct Protocol {
 
 impl Protocol {
     pub fn new(host_url: String) -> Self {
+        eprintln!("Binding to {}", host_url);
         Self {
             handle: UdpSocket::bind(host_url.parse::<SocketAddr>().unwrap()).unwrap(),
         }
@@ -16,6 +17,7 @@ impl Protocol {
 
     pub fn send_message(&self, message: &[u8], host: &str, port: u16) -> Result<(), String> {
         // TODO: If paused, just queue up the message
+        println!("Sending message to {}:{}", host, port);
         let dest: SocketAddr = format!("{}:{}", host, port).parse().unwrap();
         // let mut e = Encoder::from_memory();
         //e.encode(&message).unwrap();
@@ -61,7 +63,7 @@ impl Protocol {
             .recv_from(&mut buf)
             .map_err(|err| format!("Failed to receive a message: {}", err))?;
 
-        println!("Received {} bytes", size);
+        eprintln!("Received {} bytes from {:?}", size, peer);
 
         self.recv_start(&buf[0..size])
     }
@@ -72,7 +74,7 @@ impl Protocol {
             .recv_from(&mut buf)
             .map_err(|err| format!("Failed to receive a message: {}", err))?;
 
-        println!("Received {} bytes", size);
+        eprintln!("Received {} bytes from {:?}", size, peer);
 
         let message = self.recv_start(&buf[0..size])?;
         Ok((peer, message))
@@ -91,7 +93,7 @@ impl Protocol {
         // - 4096 - Max chunk size TODO: Make this configurable
         // -   32 - Hash string
         // -    8 - Chunk number
-        let mut buf = [0; 4136];
+        let mut buf = [0; 5000];
         let result = self.handle.recv_from(&mut buf);
 
         // Reset the timeout for future calls
@@ -106,7 +108,7 @@ impl Protocol {
             },
         };
 
-        //println!("Received {} bytes", size);
+        eprintln!("Received {} bytes from {:?}", size, peer);
 
         self.recv_start(&buf[0..size]).map_err(|err| Some(err))
     }

@@ -49,7 +49,10 @@ pub fn recv_loop(config: ServiceConfig) -> Result<(), String> {
                         // Go listen for the chunks.
                         // Note: Won't return until we've received all of them.
                         // (so could potentially never return)
-                        f_protocol.sync_and_send(&hash, None).unwrap();
+                        if let Err(err) = f_protocol.sync_and_send(&hash, None) {
+                            eprintln!("sync_and_send failed: {}", err);
+                            panic!();
+                        }
 
                         match f_protocol.local_export(&hash, &path, mode) {
                             Ok(()) => {

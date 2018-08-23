@@ -46,6 +46,7 @@ pub enum Message {
 }
 
 pub struct Protocol {
+    prefix: String,
     cbor_proto: CborProtocol,
     host: String,
     dest_port: Cell<u16>,
@@ -53,11 +54,16 @@ pub struct Protocol {
 
 impl Protocol {
     pub fn new(host: String, dest_port: u16) -> Self {
+        Protocol::new_prefix("fp".to_owned(), host, dest_port)
+    }
+
+    pub fn new_prefix(prefix: String, host: String, dest_port: u16) -> Self {
         // Get a local UDP socket (Bind)
         let c_protocol = CborProtocol::new(format!("{}:0", host));
 
         // Set up the full connection info
         Protocol {
+            prefix,
             cbor_proto: c_protocol,
             // Remote IP?
             host,
@@ -184,7 +190,7 @@ impl Protocol {
     pub fn sync_and_send(&self, hash: &str, num_chunks: Option<u32>) -> Result<(), String> {
         // TODO: Create some way to break out of this loop if we never receive all the chunks
         loop {
-            let (mut result, mut chunks) = storage::local_sync(hash, num_chunks)?;
+            let (mut result, mut chunks) = storage::local_sync(&self.prefix, hash, num_chunks)?;
 
             println!("-> {{ {}, {:?}, {:?} }}", hash, result, chunks);
             let mut vec = ser::to_vec_packed(&(hash, result)).unwrap();
@@ -233,14 +239,14 @@ impl Protocol {
     }
 
     pub fn store_meta(&self, hash: &str, num_chunks: u32) -> Result<(), String> {
-        storage::store_meta(hash, num_chunks)
+        storage::store_meta(&self.prefix, hash, num_chunks)
     }
 
     /// Create temporary folder for chunks
     /// Stream copy file from mutable space to immutable space
     /// Move folder to hash of contents
     pub fn local_import(&self, source_path: &str) -> Result<(String, u32, u32), String> {
-        storage::local_import(source_path)
+        storage::local_import(&self.prefix, source_path)
     }
 
     // Save file chunks into the requested permanent file location
@@ -250,7 +256,7 @@ impl Protocol {
         target_path: &str,
         mode: Option<u32>,
     ) -> Result<(), String> {
-        storage::local_export(hash, target_path, mode)
+        storage::local_export(&self.prefix, hash, target_path, mode)
     }
 
     // Request a download to start
@@ -284,7 +290,7 @@ impl Protocol {
 
         for (first, last) in chunks {
             for chunk_index in *first..*last {
-                let chunk = storage::load_chunk(hash, chunk_index).unwrap();
+                let chunk = storage::load_chunk(&self.prefix, hash, chunk_index).unwrap();
                 self.send_chunk(hash, chunk_index, &chunk);
             }
         }
@@ -410,7 +416,7 @@ impl Protocol {
 
                                 // TODO: Actual logic for an import request
 
-                                match storage::local_import(path) {
+                                match storage::local_import(&self.prefix, path) {
                                     Ok((hash, num_chunks, mode)) => {
                                         println!(
                                             "-> {{ {}, true, {}, {}, {} }}",
@@ -550,7 +556,7 @@ impl Protocol {
                                 if let Value::Bytes(data) = third_param {
                                     // It's a data chunk message: { hash, chunk_index, data }
                                     // Store the new chunk
-                                    storage::store_chunk(&hash, *num as u32, data);
+                                    storage::store_chunk(&self.prefix, &hash, *num as u32, data);
 
                                     return Ok(Message::ReceiveChunk(hash));
                                 } else {
