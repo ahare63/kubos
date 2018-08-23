@@ -332,7 +332,7 @@ fn upload_large() {
     let dest = format!("{}/dest", test_dir_str);
     let service_port = 7006;
 
-    // Create a 5MB file filled with random data
+    // Create a 100MB file filled with random data
     {
         let mut file = OpenOptions::new()
             .create(true)
@@ -340,7 +340,7 @@ fn upload_large() {
             .append(true)
             .open(source.clone())
             .unwrap();
-        for _ in 0..5 {
+        for _ in 0..100 {
             let mut contents = [0u8; 1_000_000];
             thread_rng().fill(&mut contents[..]);
 
@@ -359,7 +359,7 @@ fn upload_large() {
     // TODO: Remove this sleep. We need it to let the service
     // finish its work. The upload logic needs to wait on
     // the final ACK message before returning
-    thread::sleep(Duration::new(1, 0));
+    thread::sleep(Duration::new(15, 0));
 
     // Cleanup the temporary files so that the test can be repeatable
     fs::remove_dir_all(format!("client/storage/{}", hash)).unwrap();
@@ -368,7 +368,8 @@ fn upload_large() {
     // Verify the final file's contents
     let mut source_file = File::open(source).unwrap();
     let mut dest_file = File::open(dest).unwrap();
-    for num in 0..1221 {
+    // 24415 = 100M / 4096
+    for num in 0..24415 {
         let mut source_buf = [0u8; 4096];
         let mut dest_buf = [0u8; 4096];
 

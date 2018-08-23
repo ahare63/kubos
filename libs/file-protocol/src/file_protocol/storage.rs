@@ -24,6 +24,8 @@ pub fn store_chunk(prefix: &str, hash: &str, index: u32, data: &[u8]) -> Result<
 }
 
 pub fn store_meta(prefix: &str, hash: &str, num_chunks: u32) -> Result<(), String> {
+    println!("File chunks ({}): {}", hash, num_chunks);
+
     let data = vec![("num_chunks", num_chunks)];
 
     // let mut e = Encoder::from_memory();
@@ -52,7 +54,10 @@ pub fn load_chunk(prefix: &str, hash: &str, index: u32) -> Result<Vec<u8>, Strin
         .join(hash)
         .join(format!("{}", index));
 
-    File::open(path).unwrap().read_to_end(&mut data).unwrap();
+    File::open(path.clone())
+        .map_err(|err| format!("Failed to read chunk file {:?}: {}", path, err))?
+        .read_to_end(&mut data)
+        .unwrap();
     Ok(data)
 }
 
@@ -183,6 +188,12 @@ pub fn local_import(prefix: &str, source_path: &str) -> Result<(String, u32, u32
     let temp_path = Path::new(&storage_path).join(format!(".{}", time::get_time().nsec));
     let mut hasher = Blake2s::new(HASH_SIZE);
     {
+        println!(
+            "File size ({}): {}",
+            source_path,
+            fs::metadata(source_path).unwrap().len()
+        );
+
         let mut input = File::open(&source_path).unwrap();
         let mut output = File::create(&temp_path).unwrap();
 
@@ -191,6 +202,7 @@ pub fn local_import(prefix: &str, source_path: &str) -> Result<(String, u32, u32
             let mut chunk = vec![0u8; CHUNK_SIZE];
             match input.read(&mut chunk) {
                 Ok(n) => {
+                    //println!("Hash read {} bytes", n);
                     if n == 0 {
                         output.sync_all().unwrap();
                         break;
@@ -227,6 +239,7 @@ pub fn local_import(prefix: &str, source_path: &str) -> Result<(String, u32, u32
         let mut chunk = vec![0u8; CHUNK_SIZE];
         match output.read(&mut chunk) {
             Ok(n) => {
+                //println!("Read {} bytes", n);
                 if n == 0 {
                     break;
                 }
