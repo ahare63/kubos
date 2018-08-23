@@ -3,6 +3,8 @@ use std::net::{SocketAddr, UdpSocket};
 use std::time::Duration;
 use serde_cbor::{self, de};
 
+const MAX_MSG_SIZE: usize = 5000;
+
 pub struct Protocol {
     pub handle: UdpSocket,
 }
@@ -58,7 +60,7 @@ impl Protocol {
     }
 
     pub fn recv_message(&self) -> Result<Option<serde_cbor::Value>, String> {
-        let mut buf = [0; 4136];
+        let mut buf = [0; MAX_MSG_SIZE];
         let (size, peer) = self.handle
             .recv_from(&mut buf)
             .map_err(|err| format!("Failed to receive a message: {}", err))?;
@@ -69,7 +71,7 @@ impl Protocol {
     }
 
     pub fn recv_message_peer(&self) -> Result<(SocketAddr, Option<serde_cbor::Value>), String> {
-        let mut buf = [0; 4136];
+        let mut buf = [0; MAX_MSG_SIZE];
         let (size, peer) = self.handle
             .recv_from(&mut buf)
             .map_err(|err| format!("Failed to receive a message: {}", err))?;
@@ -93,7 +95,7 @@ impl Protocol {
         // - 4096 - Max chunk size TODO: Make this configurable
         // -   32 - Hash string
         // -    8 - Chunk number
-        let mut buf = [0; 5000];
+        let mut buf = [0; MAX_MSG_SIZE];
         let result = self.handle.recv_from(&mut buf);
 
         // Reset the timeout for future calls
