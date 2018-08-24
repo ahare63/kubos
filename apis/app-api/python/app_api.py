@@ -48,7 +48,10 @@ class Services:
 
         return data
 
-    def _udp_query(self, query, (ip, port), timeout):
+    def _udp_query(self, query, ip_port, timeout):
+        # Unpack tuple
+        ip, port = ip_port
+
         # Set up the socket
         sock = socket.socket(socket.AF_INET,  # Internet
                              socket.SOCK_DGRAM)  # UDP
